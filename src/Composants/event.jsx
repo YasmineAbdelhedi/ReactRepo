@@ -1,24 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Col, Button, Alert } from 'react-bootstrap';
-import placeholderImage from '../../public/images/placeholder.jpg'; 
+import { Link } from 'react-router-dom';
 
 
-const Event = ({ event, onBook }) => {
+const Event = (prop) => {
 
+
+  const [event, setEvent] = useState(prop.event);
     const [showAlert, setShowAlert] = useState(false);
+    const [like, setLike] = useState(true);
 
     const handleBook = () => {
-        onBook(event);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 2000);
+        if (event.nbTickets > 0) {
+            setEvent({
+                ...event,
+                nbTickets: event.nbTickets - 1,
+                nbParticipants: event.nbParticipants + 1
+            });
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 2000);
+        }
     };
+    const handleLike = () => {
+        setEvent({
+            ...event,
+            like: !event.like 
+        }); 
+    }
+
+
+
     return (
         <Col>
-            <Card style={{ width: '18rem' }}>
-                <Card.Img variant="top"  src={`/images/${!!event.nbTickets ? event.img : "sold_out.png"}`} alt={event.name} />
+            <Card style={{ width: '25rem' }}>
+                <Card.Img variant="top" src={`/images/${event.nbTickets > 0 ? event.img : "sold_out.png"}`} alt={event.name} />
                 <Card.Body>
-                    <Card.Title> <strong> Event name : </strong>{event.name}</Card.Title>
-                   
+                  <Link to ={`/event/${event.id}`} >  <Card.Title><strong> </strong>{event.name}</Card.Title> </Link>
                     <Card.Text>
                         <strong>Price: </strong>${event.price}
                     </Card.Text>
@@ -28,21 +45,25 @@ const Event = ({ event, onBook }) => {
                     <Card.Text>
                         <strong>Number of participants: </strong>{event.nbParticipants}
                     </Card.Text>
-                   
-                </Card.Body>
+               
                 <Button 
-                        variant="primary" 
-                        onClick={handleBook} 
-                        disabled={event.nbTickets === 0}
-                    >
-                        {event.nbTickets === 0 ? 'Sold Out' : 'Book an event'}
-                    </Button>
-                    {showAlert && <Alert variant="success">You have booked an event</Alert>}
-
+                    variant="primary" 
+                    onClick={handleBook} 
+                    disabled={event.nbTickets === 0}
+                >
+                    {event.nbTickets === 0 ? 'Sold Out' : 'Book an event'}
+                </Button > 
+                {showAlert && <Alert variant="success">You have booked an event</Alert>}
+                <Button onClick={handleLike}  className="mx-2"
+ > 
+                    {event.like ? 'dislike' : 'like' }
+            </Button>
+            </Card.Body>
             </Card>
+         
         </Col>
+
     );
 };
 
 export default Event;
-
