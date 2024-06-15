@@ -27,7 +27,7 @@ export default function NavigationBar() {
           </Nav.Link>
           <Nav.Link
             as={NavLink}
-            to="/events/add"
+            to="/event/addevent"
             style={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
           >
             Add New Event

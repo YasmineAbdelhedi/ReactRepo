@@ -7,6 +7,8 @@ import ClassComponent from './Composants/ClassComponent'
 import FunctionalComponent from './Composants/FunctionalComponent'
 import { Routes, Route } from "react-router-dom";
 import NavigationBar from "./Composants/NavigationBar";
+import Updateevent from "./Composants/Updateevent";
+import Addevent from "./Composants/Addevent";
 
 
 //lazy loading
@@ -61,8 +63,12 @@ function App() {
         />  
          <Route
           path="/event/addevent"
-          element={<AddEvent/>}
-        />  
+          element={<Addevent/>}
+        /> 
+        <Route
+        path="/events/update/:id"
+        element={<Updateevent/>}
+      />  
         <Route
           path="*"
           element={<img src="/images/notfound.jfif" width="100%" />}

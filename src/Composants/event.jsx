@@ -7,19 +7,17 @@ const Event = (prop) => {
 
 
   const [event, setEvent] = useState(prop.event);
-    const [showAlert, setShowAlert] = useState(false);
     const [like, setLike] = useState(true);
 
     const handleBook = () => {
+      prop.showAlerte();
         if (event.nbTickets > 0) {
             setEvent({
                 ...event,
                 nbTickets: event.nbTickets - 1,
                 nbParticipants: event.nbParticipants + 1
             });
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 2000);
-        }
+        } 
     };
     const handleLike = () => {
         setEvent({
@@ -53,11 +51,26 @@ const Event = (prop) => {
                 >
                     {event.nbTickets === 0 ? 'Sold Out' : 'Book an event'}
                 </Button > 
-                {showAlert && <Alert variant="success">You have booked an event</Alert>}
-                <Button onClick={handleLike}  className="mx-2"
+                <Button onClick={handleLike}  className="mx-2 "
  > 
                     {event.like ? 'dislike' : 'like' }
             </Button>
+            <Button variant="success">
+            <Link
+              to={`/events/update/${event.id}`}
+              style={{ textDecoration: "none", color: "white" }}
+            >
+              Update
+            </Link>
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => prop.onDelete(event.id)}
+            className="mx-5"
+          >
+            Delete
+          </Button>
+
             </Card.Body>
             </Card>
          

@@ -1,11 +1,13 @@
-import { useState } from "react";
+import React from 'react'
+import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { addEvent } from "../services/api";
+import { useNavigate, useParams } from "react-router-dom";
+import { editEvent, getallEvents } from "../services/api";
 
-
-const Addevent = () => {
+const Updateevent = () => {
+  
   const navigate = useNavigate();
+  const param = useParams();
 
   const [eventItem, setEventItem] = useState({
     name: "",
@@ -17,6 +19,14 @@ const Addevent = () => {
     like: false,
   });
 
+  useEffect(() => {
+    const fetchEvent = async () => {
+      const eventResult = await getallEvents(param.id);
+      setEventItem(eventResult.data);
+    };
+    fetchEvent();
+  }, []);
+
   const onValueChange = (e) => {
     setEventItem({ ...eventItem, [e.target.name]: e.target.value });
   };
@@ -24,17 +34,16 @@ const Addevent = () => {
     setEventItem({ ...eventItem, [e.target.name]: e.target.files[0].name });
   };
 
-  const addNewEvent = async () => {
-    const eventResult = await addEvent(eventItem);
-    if (eventResult.status === 201) {
+  const updateEvent = async () => {
+    const eventResult = await editEvent(param.id, eventItem);
+    if (eventResult.status === 200) {
       navigate("/events");
     }
   };
-
-
+ 
   return (
 
-    <Container style={{ marginTop: "30px" }}>
+<Container style={{ marginTop: "30px" }}>
     <h2>Add a new Event to your Event List</h2>
 
     <Form>
@@ -85,15 +94,15 @@ const Addevent = () => {
           name="img"
         />
       </Form.Group>
-      <Button variant="primary" onClick={addNewEvent}>
-        Add an Event
-      </Button>
-      <Button onClick={() => navigate("/events")} variant="secondary">
-        Cancel
-      </Button>
+      <Button variant="primary" onClick={updateEvent}>
+          Update
+        </Button>
+        <Button onClick={() => navigate("/events")} variant="secondary">
+          Cancel
+        </Button>
     </Form>
   </Container>
     )
 }
 
-export default Addevent
+export default Updateevent
