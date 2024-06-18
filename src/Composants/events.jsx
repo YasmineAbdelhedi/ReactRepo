@@ -3,11 +3,15 @@ import { Row } from 'react-bootstrap';
 import Event from '../Composants/event';
 import { Alert,Container } from 'react-bootstrap';
 import { deleteEvent, getallEvents } from "../services/api";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteEventReducer, selectEvents } from "../redux/slices/eventsSlice";
 
 const Events = () => {
     const [events, setEvents] = useState([]);
     const [showWelcome, setShowWelcome] = useState(false);
     const [alertShowing, setAlertShowing] = useState(false);
+    const dispatch = useDispatch();
+    const eventList = useSelector( state => state.events.events)
 
     // const [eventData, setEventData] = useState([]);
 
@@ -23,7 +27,7 @@ const Events = () => {
 
     const handleDelete = async (eventId) => {
         await deleteEvent(eventId);
-     
+        dispatch(deleteEventReducer(eventId));
       };
 
       
@@ -61,7 +65,7 @@ const Events = () => {
                     Bienvenue! Découvrez nos événements!
                 </Alert>
             )}
-            {events.map((event, index) => (
+            {eventList.map((event, index) => (
                 <Event key={index} 
                 event={event} 
                 showAlerte={showAlert}

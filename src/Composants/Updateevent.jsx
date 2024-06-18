@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { editEvent, getallEvents } from "../services/api";
+import { useDispatch } from "react-redux";
+import { updateEventReducer } from "../redux/slices/eventsSlice";
 
 const Updateevent = () => {
   
   const navigate = useNavigate();
   const param = useParams();
+  const dispatch =  useDispatch();
 
   const [eventItem, setEventItem] = useState({
     name: "",
@@ -36,8 +39,9 @@ const Updateevent = () => {
 
   const updateEvent = async () => {
     const eventResult = await editEvent(param.id, eventItem);
+    dispatch(updateEventReducer(eventResult.data));
     if (eventResult.status === 200) {
-      navigate("/events");
+      navigate("/");
     }
   };
  

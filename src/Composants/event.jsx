@@ -1,63 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Col, Button, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
+import { useDispatch } from "react-redux";
+import { updateEventReducer } from "../redux/slices/eventsSlice";
+import { editEvent } from "../services/api"; 
+import { addItemToWishlist, removeItemFromWishlist } from "../redux/slices/wishlistSlice";
 
 const Event = (prop) => {
 
 
-  const [event, setEvent] = useState(prop.event);
-    const [like, setLike] = useState(true);
+  // const [event, setEvent] = useState(prop.event);
+  //   const [like, setLike] = useState(true);
+    const [localEvent, setLocalEvent] = useState(prop.event);
+    const dispatch = useDispatch();
 
-    const handleBook = () => {
+    useEffect(() => {
+      setLocalEvent(prop.event);
+    }, [prop.event]);
+  
+    const handleBook = async () => {
       prop.showAlerte();
-        if (event.nbTickets > 0) {
-            setEvent({
-                ...event,
-                nbTickets: event.nbTickets - 1,
-                nbParticipants: event.nbParticipants + 1
-            });
-        } 
+      if (localEvent.nbTickets > 0) {
+        const updatedEvent = {
+          ...localEvent,
+          nbTickets: localEvent.nbTickets - 1,
+          nbParticipants: localEvent.nbParticipants + 1,
+        };
+        setLocalEvent(updatedEvent);
+        dispatch(updateEventReducer(updatedEvent));
+        await editEvent(updatedEvent.id, updatedEvent);  // Call the API to update the event
+      }
     };
-    const handleLike = () => {
-        setEvent({
-            ...event,
-            like: !event.like 
-        }); 
-    }
+  
+    const handleLike = async () => {
+      const updatedEvent = { ...localEvent, like: !localEvent.like };
+      setLocalEvent(updatedEvent);
+      dispatch(updateEventReducer(updatedEvent));
+      await editEvent(updatedEvent.id, updatedEvent);  // Call the API to update the event
+    };
 
+    const handleAddToWishlist = () => {
+      dispatch(addItemToWishlist(localEvent));
+    };
 
+    const handleRemoveFromWishlist = () => {
+      dispatch(removeItemFromWishlist(localEvent.id));
+    };
 
     return (
         <Col>
             <Card style={{ width: '25rem' }}>
-                <Card.Img variant="top" src={`/images/${event.nbTickets > 0 ? event.img : "sold_out.png"}`} alt={event.name} />
+                <Card.Img variant="top" src={`/images/${localEvent.nbTickets > 0 ? localEvent.img : "sold_out.png"}`} alt={localEvent.name} />
                 <Card.Body>
-                  <Link to ={`/event/${event.id}`} >  <Card.Title><strong> </strong>{event.name}</Card.Title> </Link>
+                  <Link to ={`/event/${localEvent.id}`} >  <Card.Title><strong> </strong>{localEvent.name}</Card.Title> </Link>
                     <Card.Text>
-                        <strong>Price: </strong>${event.price}
+                        <strong>Price: </strong>${localEvent.price}
                     </Card.Text>
                     <Card.Text>
-                        <strong>Number of tickets: </strong>{event.nbTickets}
+                        <strong>Number of tickets: </strong>{localEvent.nbTickets}
                     </Card.Text>
                     <Card.Text>
-                        <strong>Number of participants: </strong>{event.nbParticipants}
+                        <strong>Number of participants: </strong>{localEvent.nbParticipants}
                     </Card.Text>
                
                 <Button 
                     variant="primary" 
                     onClick={handleBook} 
-                    disabled={event.nbTickets === 0}
+                    disabled={localEvent.nbTickets === 0}
                 >
-                    {event.nbTickets === 0 ? 'Sold Out' : 'Book an event'}
+                    {localEvent.nbTickets === 0 ? 'Sold Out' : 'Book an event'}
                 </Button > 
                 <Button onClick={handleLike}  className="mx-2 "
  > 
-                    {event.like ? 'dislike' : 'like' }
+                    {localEvent.like ? 'dislike' : 'like' }
             </Button>
             <Button variant="success">
             <Link
-              to={`/events/update/${event.id}`}
+              to={`/events/update/${localEvent.id}`}
               style={{ textDecoration: "none", color: "white" }}
             >
               Update
@@ -65,12 +84,20 @@ const Event = (prop) => {
           </Button>
           <Button
             variant="danger"
-            onClick={() => prop.onDelete(event.id)}
+            onClick={() => prop.onDelete(localEvent.id)}
             className="mx-5"
           >
             Delete
           </Button>
 
+          <Button variant="warning" onClick={handleAddToWishlist} className="mx-2">
+
+           + Add to wishlist
+          </Button>
+         
+                <Button variant="danger" onClick={handleRemoveFromWishlist} className="mx-2">
+                    Remove from Wishlist
+                </Button>
             </Card.Body>
             </Card>
          

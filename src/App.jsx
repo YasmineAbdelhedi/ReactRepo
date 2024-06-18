@@ -10,6 +10,10 @@ import NavigationBar from "./Composants/NavigationBar";
 import Updateevent from "./Composants/Updateevent";
 import Addevent from "./Composants/Addevent";
 
+//redux
+import { useDispatch } from "react-redux";
+import { fetchEvents } from "./redux/slices/eventsSlice";
+import Wishlist from "./Composants/wishlist";
 
 //lazy loading
 
@@ -20,7 +24,7 @@ const AddEvent = React.lazy(() => import('./Composants/Addevent'));
 
 function App() {
   const [count, setCount] = useState(0)
-
+  const dispatch = useDispatch();
 
       // const [{color,background}, setColor]= useState({color:"red",background:"purple"});
   
@@ -53,10 +57,8 @@ function App() {
 <React.Suspense fallback={<h1> Loading ...</h1>} >
 <NavigationBar/>
 <Routes>
-      <Route 
-          path="/events"  
-          element={<Events/>} />
-      
+                <Route index element={<Events />} loader={dispatch(fetchEvents())}/>
+
        <Route
           path="/event/:id"
           element={<EventDetails/>}
@@ -69,6 +71,10 @@ function App() {
         path="/events/update/:id"
         element={<Updateevent/>}
       />  
+      <Route
+          path="/wishlist"
+          element={<Wishlist/>}
+        /> 
         <Route
           path="*"
           element={<img src="/images/notfound.jfif" width="100%" />}
